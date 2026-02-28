@@ -158,7 +158,7 @@ analog_recorder::analog_recorder(Source *src, System *system, Recorder_Type type
     tone_squelch = gr::analog::ctcss_squelch_ff::make(system_channel_rate, this->tone_freq, 0.01, 0, 0, false);
   }
   if (use_dcs_squelch) {
-    dcs_squelch = gr::blocks::dcs_squelch_ff_impl::make((int)system_channel_rate, dcs_code, dcs_inverted);
+    dcs_squelch = gr::blocks::dcs_squelch_ff_impl::make((int)system_channel_rate, dcs_code, dcs_inverted, 250.0f);
   }
   // k = quad_rate/(2*math.pi*max_dev) = 48k / (6.283185*5000) = 1.527
 
