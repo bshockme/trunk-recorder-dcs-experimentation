@@ -59,11 +59,13 @@ public:
   void set_fsync_enabled(bool b);
   void set_star_enabled(bool b);
   void set_tps_enabled(bool b);
+  void set_dcs_enabled(bool b);
 
   bool get_mdc_enabled();
   bool get_fsync_enabled();
   bool get_star_enabled();
   bool get_tps_enabled();
+  bool get_dcs_enabled();
 
   void log_decoder_msg(long unitId, const char *signaling_type, SignalType signal);
   void process_message_queues(void);

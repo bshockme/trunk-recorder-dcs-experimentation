@@ -65,11 +65,13 @@ void decoder_wrapper_impl::set_mdc_enabled(bool b) { d_signal_decoder_sink->set_
 void decoder_wrapper_impl::set_fsync_enabled(bool b) { d_signal_decoder_sink->set_fsync_enabled(b); };
 void decoder_wrapper_impl::set_star_enabled(bool b) { d_signal_decoder_sink->set_star_enabled(b); };
 void decoder_wrapper_impl::set_tps_enabled(bool b) { d_tps_decoder_sink->set_enabled(b); };
+void decoder_wrapper_impl::set_dcs_enabled(bool b) { d_signal_decoder_sink->set_dcs_enabled(b); };
 
 bool decoder_wrapper_impl::get_mdc_enabled() { return d_signal_decoder_sink->get_mdc_enabled(); };
 bool decoder_wrapper_impl::get_fsync_enabled() { return d_signal_decoder_sink->get_fsync_enabled(); };
 bool decoder_wrapper_impl::get_star_enabled() { return d_signal_decoder_sink->get_star_enabled(); };
 bool decoder_wrapper_impl::get_tps_enabled() { return d_tps_decoder_sink->get_enabled(); };
+bool decoder_wrapper_impl::get_dcs_enabled() { return d_signal_decoder_sink->get_dcs_enabled(); };
 
 void decoder_wrapper_impl::log_decoder_msg(long unitId, const char *signaling_type, SignalType signal) {
   if (d_callback != NULL) {

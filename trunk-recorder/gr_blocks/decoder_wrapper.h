@@ -65,11 +65,13 @@ public:
   virtual void set_fsync_enabled(bool b){};
   virtual void set_star_enabled(bool b){};
   virtual void set_tps_enabled(bool b){};
+  virtual void set_dcs_enabled(bool b){};
 
   virtual bool get_mdc_enabled() { return false; };
   virtual bool get_fsync_enabled() { return false; };
   virtual bool get_star_enabled() { return false; };
   virtual bool get_tps_enabled() { return false; }
+  virtual bool get_dcs_enabled() { return false; }
 
   virtual void process_message_queues(void){};
 };
