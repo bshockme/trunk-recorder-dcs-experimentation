@@ -9,6 +9,7 @@
 #include "csv_helper.h"
 #include <csv-parser/csv.hpp>
 
+#include <cctype>
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
@@ -184,8 +185,29 @@ void Talkgroups::load_channels(int sys_num, std::string filename) {
       group = row["Category"].get<std::string>();
     }
 
-    if ((reader.index_of("Tone") >= 0) && row["Tone"].is_float()) {
-      tone = row["Tone"].get<double>();
+    if (reader.index_of("Tone") >= 0) {
+      if (row["Tone"].is_float()) {
+        tone = row["Tone"].get<double>();
+      } else if (row["Tone"].is_str()) {
+        std::string tone_str = row["Tone"].get<std::string>();
+        if (!tone_str.empty() && std::toupper((unsigned char)tone_str[0]) == 'D') {
+          /* Parse D### (normal) or D###N (inverted polarity) */
+          bool inv = (tone_str.size() > 1 &&
+                      std::toupper((unsigned char)tone_str.back()) == 'N');
+          std::string code_str = tone_str.substr(1, inv ? tone_str.size() - 2
+                                                        : std::string::npos);
+          try {
+            int dcs_code = std::stoi(code_str, nullptr, 8); /* octal */
+            /* Encode in tone_freq: negative = DCS, offset 1000 = inverted */
+            tone = inv ? -(double)(dcs_code + 1000) : -(double)dcs_code;
+            BOOST_LOG_TRIVIAL(info) << "DCS tone: " << tone_str
+                                    << " (code=" << dcs_code
+                                    << " inv=" << inv << ")";
+          } catch (...) {
+            BOOST_LOG_TRIVIAL(error) << "Failed to parse DCS tone: " << tone_str;
+          }
+        }
+      }
     }
 
     if ((reader.index_of("Frequency") >= 0) && row["Frequency"].is_num()) {
@@ -213,7 +235,15 @@ void Talkgroups::load_channels(int sys_num, std::string filename) {
       }
     }
     if (enable) {
-      tg = new Talkgroup(sys_num, tg_number, freq, tone, alpha_tag, description, tag, group, squelch_db, signal_detector);
+      /* For DCS, tone is encoded as a negative value; pass 0 to constructor
+       * and set the dedicated dcs_code / dcs_inverted fields instead.      */
+      double ctor_tone = (tone < 0.0) ? 0.0 : tone;
+      tg = new Talkgroup(sys_num, tg_number, freq, ctor_tone, alpha_tag, description, tag, group, squelch_db, signal_detector);
+      if (tone < 0.0) {
+        int raw = (int)(-tone + 0.5);
+        tg->dcs_code     = raw % 1000;
+        tg->dcs_inverted = (raw >= 1000);
+      }
       talkgroups.push_back(tg);
       lines_pushed++;
     }

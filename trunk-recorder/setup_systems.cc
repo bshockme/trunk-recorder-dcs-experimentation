@@ -20,6 +20,11 @@ bool setup_conventional_channel(System *system, double frequency, long channel_i
       if (system->has_channel_file()) {
         Talkgroup *tg = system->find_talkgroup_by_freq(frequency);
         tone_freq = tg->tone;
+        /* DCS: encode as negative tone_freq (inverted adds 1000 offset) */
+        if (tg->dcs_code > 0) {
+          tone_freq = tg->dcs_inverted ? -(float)(tg->dcs_code + 1000)
+                                       : -(float)tg->dcs_code;
+        }
 
         // If there is a per channel squelch setting, use it, otherwise use the system squelch setting
         if (tg->squelch_db != DB_UNSET) {

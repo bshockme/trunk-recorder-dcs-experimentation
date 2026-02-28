@@ -389,6 +389,8 @@ bool load_config(string config_file, Config &config, gr::top_block_sptr &tb, std
         BOOST_LOG_TRIVIAL(info) << "Decode Star: " << system->get_star_enabled();
         system->set_tps_enabled(element.value("decodeTPS", false));
         BOOST_LOG_TRIVIAL(info) << "Decode TPS: " << system->get_tps_enabled();
+        system->set_dcs_enabled(element.value("decodeDCS", false));
+        BOOST_LOG_TRIVIAL(info) << "Decode DCS: " << system->get_dcs_enabled();
         std::string talkgroup_display_format_string = element.value("talkgroupDisplayFormat", "Id");
         if (boost::iequals(talkgroup_display_format_string, "id_tag")) {
           system->set_talkgroup_display_format(talkGroupDisplayFormat_id_tag);

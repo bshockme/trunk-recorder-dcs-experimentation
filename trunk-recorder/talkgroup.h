@@ -24,6 +24,8 @@ public:
   // For Conventional
   double freq;
   double tone;
+  int dcs_code;       // 0 = no DCS; otherwise decimal DCS code (e.g. 19 for D023)
+  bool dcs_inverted;  // true for inverted polarity ("N" suffix, e.g. D023N)
 
   Talkgroup(int sys_num, long num, std::string mode, std::string alpha_tag, std::string description, std::string tag, std::string group, int priority, unsigned long preferredNAC);
   Talkgroup(int sys_num, long num, double freq, double tone, std::string alpha_tag, std::string description, std::string tag, std::string group, double squelch_db, bool signal_detection);

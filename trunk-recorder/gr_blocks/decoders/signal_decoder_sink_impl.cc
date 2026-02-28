@@ -33,6 +33,7 @@
 #include <stdexcept>
 #include <stdio.h>
 
+#include "dcs_decode.h"
 #include "fsync_decode.h"
 #include "mdc_decode.h"
 #include "star_decode.h"
@@ -70,6 +71,20 @@ SignalType get_mdc_signal_type(unsigned char op, unsigned char arg) {
     return SignalType::Normal;
   }
 }
+void dcs_callback(int code, int inverted, void *context) {
+  char json_buffer[256];
+  char label[16];
+  /* Format code as octal with D prefix, add N suffix for inverted */
+  snprintf(label, sizeof(label), "D%03o%s", code, inverted ? "N" : "");
+  snprintf(json_buffer, sizeof(json_buffer),
+           "{\"type\":\"DCS\",\"timestamp\":\"%d\",\"code\":\"%s\"}\n",
+           (int)time(NULL), label);
+  BOOST_LOG_TRIVIAL(info) << json_buffer;
+
+  signal_decoder_sink_impl *decoder = (signal_decoder_sink_impl *)context;
+  decoder->log_decoder_msg((long)code, "DCS", SignalType::Normal);
+}
+
 void mdc_callback(int frameCount, // 1 or 2 - if 2 then extra0-3 are valid
                   unsigned char op,
                   unsigned char arg,
@@ -149,22 +164,27 @@ signal_decoder_sink_impl::signal_decoder_sink_impl(unsigned int sample_rate, dec
                  io_signature::make(1, 1, sizeof(float)),
                  io_signature::make(0, 0, 0)),
       d_callback(callback),
+      d_dcs_enabled(false),
       d_mdc_enabled(false),
       d_fsync_enabled(false),
       d_star_enabled(false) {
-  d_mdc_decoder = mdc_decoder_new(sample_rate);
+  d_dcs_decoder  = dcs_decoder_new(sample_rate);
+  d_mdc_decoder  = mdc_decoder_new(sample_rate);
   d_fsync_decoder = fsync_decoder_new(sample_rate);
-  d_star_decoder = star_decoder_new(sample_rate);
+  d_star_decoder  = star_decoder_new(sample_rate);
 
+  dcs_decoder_set_callback(d_dcs_decoder, dcs_callback, this);
   mdc_decoder_set_callback(d_mdc_decoder, mdc_callback, this);
   fsync_decoder_set_callback(d_fsync_decoder, fsync_callback, this);
   star_decoder_set_callback(d_star_decoder, star_format_1_16383, star_callback, this);
 }
 
+void signal_decoder_sink_impl::set_dcs_enabled(bool b) { d_dcs_enabled = b; };
 void signal_decoder_sink_impl::set_mdc_enabled(bool b) { d_mdc_enabled = b; };
 void signal_decoder_sink_impl::set_fsync_enabled(bool b) { d_fsync_enabled = b; };
 void signal_decoder_sink_impl::set_star_enabled(bool b) { d_star_enabled = b; };
 
+bool signal_decoder_sink_impl::get_dcs_enabled() { return d_dcs_enabled; };
 bool signal_decoder_sink_impl::get_mdc_enabled() { return d_mdc_enabled; };
 bool signal_decoder_sink_impl::get_fsync_enabled() { return d_fsync_enabled; };
 bool signal_decoder_sink_impl::get_star_enabled() { return d_star_enabled; };
@@ -177,6 +197,10 @@ int signal_decoder_sink_impl::work(int noutput_items, gr_vector_const_void_star 
 }
 
 int signal_decoder_sink_impl::dowork(int noutput_items, gr_vector_const_void_star &input_items, gr_vector_void_star &output_items) {
+
+  if (d_dcs_enabled) {
+    dcs_decoder_process_samples(d_dcs_decoder, (float *)input_items[0], noutput_items);
+  }
 
   if (d_mdc_enabled) {
     mdc_decoder_process_samples(d_mdc_decoder, (float *)input_items[0], noutput_items);

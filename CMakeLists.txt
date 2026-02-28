@@ -294,7 +294,9 @@ list(APPEND trunk_recorder_sources
   trunk-recorder/gr_blocks/decoders/fsync_decode.cc
   trunk-recorder/gr_blocks/decoders/mdc_decode.cc
   trunk-recorder/gr_blocks/decoders/star_decode.cc
+  trunk-recorder/gr_blocks/decoders/dcs_decode.cc
   trunk-recorder/gr_blocks/decoders/signal_decoder_sink_impl.cc
+  trunk-recorder/gr_blocks/dcs_squelch_ff_impl.cc
   trunk-recorder/gr_blocks/decoders/tps_decoder_sink_impl.cc
   trunk-recorder/gr_blocks/decoder_wrapper_impl.cc
   trunk-recorder/gr_blocks/plugin_wrapper_impl.cc

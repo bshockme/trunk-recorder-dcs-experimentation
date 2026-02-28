@@ -46,6 +46,7 @@ class Source;
 class analog_recorder;
 
 #include "../gr_blocks/channelizer.h"
+#include "../gr_blocks/dcs_squelch_ff.h"
 #include "../gr_blocks/decoder_wrapper.h"
 #include "../gr_blocks/freq_xlating_fft_filter.h"
 #include "../gr_blocks/plugin_wrapper.h"
@@ -121,6 +122,9 @@ private:
   time_t timestamp;
   time_t starttime;
   bool use_tone_squelch;
+  bool use_dcs_squelch;
+  int  dcs_code;
+  bool dcs_inverted;
 
   State state;
   std::vector<float> channel_lpf_taps;
@@ -154,6 +158,7 @@ private:
   gr::filter::fir_filter_fff::sptr low_f;
   gr::analog::pwr_squelch_ff::sptr squelch_two;
   gr::analog::ctcss_squelch_ff::sptr tone_squelch;
+  gr::blocks::dcs_squelch_ff::sptr dcs_squelch;
 
   gr::analog::quadrature_demod_cf::sptr demod;
   gr::blocks::float_to_short::sptr converter;

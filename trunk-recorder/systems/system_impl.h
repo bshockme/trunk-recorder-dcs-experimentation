@@ -145,11 +145,13 @@ public:
   void set_fsync_enabled(bool b) override;
   void set_star_enabled(bool b) override;
   void set_tps_enabled(bool b) override;
+  void set_dcs_enabled(bool b) override;
 
   bool get_mdc_enabled() override;
   bool get_fsync_enabled() override;
   bool get_star_enabled() override;
   bool get_tps_enabled() override;
+  bool get_dcs_enabled() override;
 
   void set_analog_levels(double r) override;
   double get_analog_levels() override;
@@ -282,5 +284,6 @@ private:
   bool d_fsync_enabled;
   bool d_star_enabled;
   bool d_tps_enabled;
+  bool d_dcs_enabled;
 };
 #endif

@@ -27,6 +27,7 @@
 #include "signal_decoder_sink.h"
 #include <boost/log/trivial.hpp>
 
+#include "dcs_decode.h"
 #include "fsync_decode.h"
 #include "mdc_decode.h"
 #include "star_decode.h"
@@ -36,11 +37,13 @@ namespace blocks {
 
 class signal_decoder_sink_impl : public signal_decoder_sink {
 private:
-  mdc_decoder_t *d_mdc_decoder;
+  dcs_decoder_t  *d_dcs_decoder;
+  mdc_decoder_t  *d_mdc_decoder;
   fsync_decoder_t *d_fsync_decoder;
-  star_decoder_t *d_star_decoder;
+  star_decoder_t  *d_star_decoder;
   decoder_callback d_callback;
 
+  bool d_dcs_enabled;
   bool d_mdc_enabled;
   bool d_fsync_enabled;
   bool d_star_enabled;
@@ -66,9 +69,11 @@ public:
                    gr_vector_const_void_star &input_items,
                    gr_vector_void_star &output_items);
 
+  void set_dcs_enabled(bool b);
   void set_mdc_enabled(bool b);
   void set_fsync_enabled(bool b);
   void set_star_enabled(bool b);
+  bool get_dcs_enabled();
   bool get_mdc_enabled();
   bool get_fsync_enabled();
   bool get_star_enabled();

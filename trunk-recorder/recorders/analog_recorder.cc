@@ -1,6 +1,7 @@
 
 #include "analog_recorder.h"
 #include "../formatter.h"
+#include "../gr_blocks/dcs_squelch_ff_impl.h"
 #include "../gr_blocks/decoder_wrapper_impl.h"
 #include "../gr_blocks/plugin_wrapper_impl.h"
 #include "../gr_blocks/transmission_sink.h"
@@ -109,9 +110,21 @@ analog_recorder::analog_recorder(Source *src, System *system, Recorder_Type type
 
   bool use_streaming = false;
 
+  use_dcs_squelch = false;
+  dcs_code = 0;
+  dcs_inverted = false;
+
   if (tone_freq > 0) {
     use_tone_squelch = true;
     this->tone_freq = tone_freq;
+  } else if (tone_freq < 0) {
+    /* DCS encoded as negative: -(code) normal, -(code+1000) inverted */
+    use_tone_squelch = false;
+    this->tone_freq = 0;
+    use_dcs_squelch = true;
+    int raw = (int)(-tone_freq + 0.5f);
+    dcs_code     = raw % 1000;
+    dcs_inverted = (raw >= 1000);
   } else {
     use_tone_squelch = false;
     this->tone_freq = 0;
@@ -143,6 +156,9 @@ analog_recorder::analog_recorder(Source *src, System *system, Recorder_Type type
 
   if (use_tone_squelch) {
     tone_squelch = gr::analog::ctcss_squelch_ff::make(system_channel_rate, this->tone_freq, 0.01, 0, 0, false);
+  }
+  if (use_dcs_squelch) {
+    dcs_squelch = gr::blocks::dcs_squelch_ff_impl::make(system_channel_rate, dcs_code, dcs_inverted);
   }
   // k = quad_rate/(2*math.pi*max_dev) = 48k / (6.283185*5000) = 1.527
 
@@ -201,8 +217,11 @@ analog_recorder::analog_recorder(Source *src, System *system, Recorder_Type type
   connect(prefilter, 0, demod, 0);
   connect(demod, 0, deemph, 0);
   if (use_tone_squelch) {
-    connect(deemph, 0, tone_squelch, 0); 
-      connect(tone_squelch, 0, decim_audio, 0);
+    connect(deemph, 0, tone_squelch, 0);
+    connect(tone_squelch, 0, decim_audio, 0);
+  } else if (use_dcs_squelch) {
+    connect(deemph, 0, dcs_squelch, 0);
+    connect(dcs_squelch, 0, decim_audio, 0);
   } else {
     connect(deemph, 0, decim_audio, 0);
   }
@@ -354,6 +373,7 @@ void analog_recorder::plugin_callback_handler(int16_t *samples, int sampleCount)
 }
 
 void analog_recorder::setup_decoders_for_system(System *system) {
+  decoder_sink->set_dcs_enabled(system->get_dcs_enabled());
   decoder_sink->set_mdc_enabled(system->get_mdc_enabled());
   decoder_sink->set_fsync_enabled(system->get_fsync_enabled());
   decoder_sink->set_star_enabled(system->get_star_enabled());

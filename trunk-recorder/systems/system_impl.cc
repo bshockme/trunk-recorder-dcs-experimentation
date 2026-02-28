@@ -99,6 +99,7 @@ System_impl::System_impl(int sys_num) {
   d_fsync_enabled = false;
   d_star_enabled = false;
   d_tps_enabled = false;
+  d_dcs_enabled = false;
   retune_attempts = 0;
   message_count = 0;
   decode_rate = 0;
@@ -257,11 +258,13 @@ void System_impl::set_mdc_enabled(bool b) { d_mdc_enabled = b; };
 void System_impl::set_fsync_enabled(bool b) { d_fsync_enabled = b; };
 void System_impl::set_star_enabled(bool b) { d_star_enabled = b; };
 void System_impl::set_tps_enabled(bool b) { d_tps_enabled = b; }
+void System_impl::set_dcs_enabled(bool b) { d_dcs_enabled = b; }
 
 bool System_impl::get_mdc_enabled() { return d_mdc_enabled; };
 bool System_impl::get_fsync_enabled() { return d_fsync_enabled; };
 bool System_impl::get_star_enabled() { return d_star_enabled; };
 bool System_impl::get_tps_enabled() { return d_tps_enabled; };
+bool System_impl::get_dcs_enabled() { return d_dcs_enabled; };
 
 bool System_impl::get_audio_archive() {
   return this->audio_archive;

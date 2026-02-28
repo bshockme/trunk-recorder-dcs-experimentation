@@ -79,11 +79,13 @@ public:
   virtual void set_fsync_enabled(bool b) = 0;
   virtual void set_star_enabled(bool b) = 0;
   virtual void set_tps_enabled(bool b) = 0;
+  virtual void set_dcs_enabled(bool b) = 0;
 
   virtual bool get_mdc_enabled() = 0;
   virtual bool get_fsync_enabled() = 0;
   virtual bool get_star_enabled() = 0;
   virtual bool get_tps_enabled() = 0;
+  virtual bool get_dcs_enabled() = 0;
 
   virtual void set_analog_levels(double r) = 0;
   virtual double get_analog_levels() = 0;
