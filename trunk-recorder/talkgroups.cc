@@ -191,11 +191,12 @@ void Talkgroups::load_channels(int sys_num, std::string filename) {
       } else if (row["Tone"].is_str()) {
         std::string tone_str = row["Tone"].get<std::string>();
         if (!tone_str.empty() && std::toupper((unsigned char)tone_str[0]) == 'D') {
-          /* Parse D### (normal) or D###N (inverted polarity) */
-          bool inv = (tone_str.size() > 1 &&
-                      std::toupper((unsigned char)tone_str.back()) == 'N');
-          std::string code_str = tone_str.substr(1, inv ? tone_str.size() - 2
-                                                        : std::string::npos);
+          /* Parse D###N (normal) or D###I (inverted polarity) */
+          char last = (tone_str.size() > 1) ? std::toupper((unsigned char)tone_str.back()) : '\0';
+          bool inv = (last == 'I');
+          bool has_suffix = (last == 'N' || last == 'I');
+          std::string code_str = tone_str.substr(1, has_suffix ? tone_str.size() - 2
+                                                               : std::string::npos);
           try {
             int dcs_code = std::stoi(code_str, nullptr, 8); /* octal */
             /* Encode in tone_freq: negative = DCS, offset 1000 = inverted */

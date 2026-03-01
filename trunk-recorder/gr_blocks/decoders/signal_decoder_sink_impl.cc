@@ -74,8 +74,8 @@ SignalType get_mdc_signal_type(unsigned char op, unsigned char arg) {
 void dcs_callback(int code, int inverted, void *context) {
   char json_buffer[256];
   char label[16];
-  /* Format code as octal with D prefix, add N suffix for inverted */
-  snprintf(label, sizeof(label), "D%03o%s", code, inverted ? "N" : "");
+  /* Format code as octal with D prefix: N = normal, I = inverted */
+  snprintf(label, sizeof(label), "D%03o%s", code, inverted ? "I" : "N");
   snprintf(json_buffer, sizeof(json_buffer),
            "{\"type\":\"DCS\",\"timestamp\":\"%d\",\"code\":\"%s\"}\n",
            (int)time(NULL), label);

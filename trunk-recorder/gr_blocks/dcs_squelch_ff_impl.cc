@@ -46,7 +46,7 @@ dcs_squelch_ff_impl::dcs_squelch_ff_impl(int sample_rate, int target_code,
 
     BOOST_LOG_TRIVIAL(info) << "DCS squelch: target D"
                             << std::oct << target_code << std::dec
-                            << (target_inverted ? "N" : "")
+                            << (target_inverted ? "I" : "N")
                             << "  tail=" << tail_ms << " ms"
                             << "  sample_rate=" << sample_rate;
 }
