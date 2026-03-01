@@ -2,6 +2,12 @@
 ---
 [![Discord](./docs/media/discord.jpg)](https://discord.gg/btJAhESnks) &nbsp;&nbsp;
 
+#### WARNING ####
+
+This fork of Trunk-Recorder is purely an experiment to work on DCS support. I am not a coder, I am a radio guy. Most of the code I have added or changed was written by AI, and may attempt to set you computer on fire, kill your chickens, or autonomously buy that used fire truck you know you want but you can't afford. Use at your own risk
+
+!!!YOU HAVE BEEN WARNED!!!
+
 
 ## Sponsors
 **Do you find Trunk Recorder and OpenMHz useful?** 
