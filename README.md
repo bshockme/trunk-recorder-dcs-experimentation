@@ -8,6 +8,12 @@ This fork of Trunk-Recorder is purely an experiment to work on DCS support. I am
 
 !!!YOU HAVE BEEN WARNED!!!
 
+## DCS SUPPORT ##
+
+To use DCS (Digital Code Squelch) on appropriate analog channels, add the appropriate DCS tone to your exisiting ConvChan.csv in the "Tone" Column.
+
+Format: D###N for Normal DCS Tones, D###I for Inverted tones. Tones must include three numerical digits.
+
 
 ## Sponsors
 **Do you find Trunk Recorder and OpenMHz useful?** 
