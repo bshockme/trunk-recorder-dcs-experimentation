@@ -20,7 +20,7 @@ namespace blocks {
  * Factory / constructor / destructor
  * ---------------------------------------------------------------------- */
 
-dcs_squelch_ff::sptr
+dcs_squelch_ff_impl::sptr
 dcs_squelch_ff_impl::make(int sample_rate, int target_code,
                           bool target_inverted, float tail_ms) {
     return gnuradio::get_initial_sptr(
